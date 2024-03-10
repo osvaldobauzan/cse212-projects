@@ -34,12 +34,18 @@ public static class ArraysTester {
     /// <returns>array of doubles that are the multiples of the supplied number</returns>
     private static double[] MultiplesOf(double number, int length)
     {
-        // TODO Problem 1 Start
-        // Remember: Using comments in your program, write down your process for solving this problem
-        // step by step before you write the code. The plan should be clear enough that it could
-        // be implemented by another person.
+        // Plan
+        // We are going to create an empty array using the length parameter to determine its size.
+        // Then we will create a for loop with a variable of i that will start at 1 and will run until it equals the length parameter
+        // Since indexes in array start at 0, we will subtract the i variable by 1 in order to insert the value into the appropriate newArray index.
+        // This will create an array that has the multiples of the number from 1 to the length.
 
-        return new double[0]; // replace this return statement with your own
+        double[] newArray = new double[length];
+        for(int i = 1; i <= length; i++){
+            newArray[i-1] = number*i;
+        }
+
+        return newArray; // replace this return statement with your own
     }
     
     /// <summary>
@@ -52,10 +58,29 @@ public static class ArraysTester {
     /// </summary>
     private static void RotateListRight(List<int> data, int amount)
     {
-        // TODO Problem 2 Start
-        // Remember: Using comments in your program, write down your process for solving this problem
-        // step by step before you write the code. The plan should be clear enough that it could
-        // be implemented by another person.
+        // To start we are going to get the List's length or count, and store it in a variable.
+        // After that we are going to determine how many places the values actually need to be shifted
+        // we do this by using modulo so that when the shift value is in excess it will simplify it.
+        // We then create a new list, and get the range of values from data's last index minus the amount, to data's length.
+        // After adding these values to the new list, we will add the remaining values in.
+        // 0 to data's last index minus amount.
+        // Then we replace data's values with the new list's values via a for loop.
+        // We also implemented a quick check to see if the amount is equivalent to no change being made to the list.
+
+
+        int listLength = data.Count;
+        int shiftValue = amount % listLength;
+
+        if(shiftValue == 0) return;
+
+        List<int> modifiedList = new List<int>(listLength);
+
+        modifiedList.AddRange(data.GetRange(listLength - shiftValue, shiftValue));
+        modifiedList.AddRange(data.GetRange(0, listLength - shiftValue));
+
+        for(int i = 0; i < listLength; i++){
+            data[i] = modifiedList[i];
+        }
 
     }
 }
