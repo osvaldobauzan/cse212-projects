@@ -13,9 +13,11 @@
         players.AddPerson("Tim", 5);
         players.AddPerson("Sue", 3);
         // Console.WriteLine(players);    // This can be un-commented out for debug help
-        while (players.Length > 0)
+        while (players.Length > 0){
             players.GetNextPerson();
-        // Defect(s) Found: 
+        }
+        // Defect(s) Found:
+            //Person Queue was inserting at 0 instead of adding to the end of the list.
 
         Console.WriteLine("---------");
 
@@ -38,7 +40,8 @@
         while (players.Length > 0)
             players.GetNextPerson();
 
-        // Defect(s) Found: 
+        // Defect(s) Found:
+            //Was also caused by the PersonQueue classes adding in the front instead of the back.
 
         Console.WriteLine("---------");
 
@@ -56,7 +59,9 @@
             players.GetNextPerson();
             // Console.WriteLine(players);
         }
-        // Defect(s) Found: 
+        // Defect(s) Found:
+            //Had to add a check to see if turns is greater than 0 after being subtracted, and if so to add it into the queue.
+            //If turns is equivalent to 0 or less on check, show the person and requeue it.
 
         Console.WriteLine("---------");
 
@@ -73,7 +78,8 @@
             players.GetNextPerson();
             // Console.WriteLine(players);
         }
-        // Defect(s) Found: 
+        // Defect(s) Found:
+            // account for the negative number queue input, to make it a forever queue.
 
         Console.WriteLine("---------");
 
@@ -84,5 +90,6 @@
         players = new TakingTurnsQueue();
         players.GetNextPerson();
         // Defect(s) Found:
+            // No defects were found.
     }
 }
