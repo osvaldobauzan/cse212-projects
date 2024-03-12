@@ -107,10 +107,28 @@ public static class SetsAndMapsTester {
     /// that there were no duplicates) and therefore should not be displayed.
     /// </summary>
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
-    private static void DisplayPairs(string[] words) {
-        // To display the pair correctly use something like:
-        // Console.WriteLine($"{word} & {pair}");
-        // Each pair of words should displayed on its own line.
+    private static void DisplayPairs(string[] words)
+    {
+        // Use a HashSet to store the sorted characters of each word
+        var wordSet = new HashSet<string>();
+
+        foreach (var word in words)
+        {
+            // Convert the word to a char array, sort it, and then convert it back to a string
+            var sortedWord = new string(word.ToCharArray().OrderBy(c => c).ToArray());
+
+            // Check if the sorted word is already in the set
+            if (wordSet.Contains(sortedWord))
+            {
+                // Display the symmetric pair
+                Console.WriteLine($"{word} & {sortedWord}");
+            }
+            else
+            {
+                // Add the sorted word to the set
+                wordSet.Add(sortedWord);
+            }
+        }
     }
 
     /// <summary>
@@ -127,11 +145,30 @@ public static class SetsAndMapsTester {
     /// #############
     /// # Problem 2 #
     /// #############
-    private static Dictionary<string, int> SummarizeDegrees(string filename) {
+    private static Dictionary<string, int> SummarizeDegrees(string filename)
+    {
         var degrees = new Dictionary<string, int>();
-        foreach (var line in File.ReadLines(filename)) {
+
+        foreach (var line in File.ReadLines(filename))
+        {
             var fields = line.Split(",");
-            // Todo Problem 2 - ADD YOUR CODE HERE
+
+            // Assuming the degree information is in the 4th column (index 3)
+            if (fields.Length > 3)
+            {
+                var degree = fields[3].Trim();
+
+                if (degrees.ContainsKey(degree))
+                {
+                    // Increment the count if the degree is already in the dictionary
+                    degrees[degree]++;
+                }
+                else
+                {
+                    // Add the degree to the dictionary with count 1 if not present
+                    degrees.Add(degree, 1);
+                }
+            }
         }
 
         return degrees;
@@ -156,10 +193,64 @@ public static class SetsAndMapsTester {
     /// #############
     /// # Problem 3 #
     /// #############
-    private static bool IsAnagram(string word1, string word2) {
-        // Todo Problem 3 - ADD YOUR CODE HERE
-        return false;
+    private static bool IsAnagram(string word1, string word2)
+    {
+        // Remove spaces and convert to lowercase for case-insensitive comparison
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
+
+        // If the lengths are different, they cannot be anagrams
+        if (word1.Length != word2.Length)
+        {
+            return false;
+        }
+
+        // Use dictionaries to count occurrences of each letter in both words
+        Dictionary<char, int> count1 = new Dictionary<char, int>();
+        Dictionary<char, int> count2 = new Dictionary<char, int>();
+
+        foreach (char letter in word1)
+        {
+            if (count1.ContainsKey(letter))
+            {
+                count1[letter]++;
+            }
+            else
+            {
+                count1[letter] = 1;
+            }
+        }
+
+        foreach (char letter in word2)
+        {
+            if (count2.ContainsKey(letter))
+            {
+                count2[letter]++;
+            }
+            else
+            {
+                count2[letter] = 1;
+            }
+        }
+
+        // Compare the dictionaries
+        return DictionaryEqual(count1, count2);
     }
+
+    private static bool DictionaryEqual<K, V>(Dictionary<K, V> dict1, Dictionary<K, V> dict2)
+    {
+        if (dict1.Count != dict2.Count)
+            return false;
+
+        foreach (var pair in dict1)
+        {
+            if (!dict2.TryGetValue(pair.Key, out var value) || !EqualityComparer<V>.Default.Equals(value, pair.Value))
+                return false;
+        }
+
+        return true;
+    }
+
 
     /// <summary>
     /// Sets up the maze dictionary for problem 4
@@ -222,18 +313,22 @@ public static class SetsAndMapsTester {
     /// </summary>
     private static void EarthquakeDailySummary() {
         const string uri = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-        using var client = new HttpClient();
-        using var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-        using var jsonStream = client.Send(getRequestMessage).Content.ReadAsStream();
-        using var reader = new StreamReader(jsonStream);
-        var json = reader.ReadToEnd();
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+    using var client = new HttpClient();
+    using var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
+    using var jsonStream = client.Send(getRequestMessage).Content.ReadAsStream();
+    using var reader = new StreamReader(jsonStream);
+    var json = reader.ReadToEnd();
+    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
+    var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
 
-        // TODO:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to print out each place a earthquake has happened today and its magitude.
+    // Iterate through each earthquake feature and print out the place and magnitude
+    foreach (var feature in featureCollection.Features)
+    {
+        var place = feature.Properties.Place;
+        var magnitude = feature.Properties.Mag;
+
+        Console.WriteLine($"{place} - Mag {magnitude}");
+    }
     }
 }
